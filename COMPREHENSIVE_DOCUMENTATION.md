@@ -748,6 +748,7 @@ Progress check:
 - Watch for "Successfully installed" messages
 - Final line should say "Successfully installed [N] packages"
 
+
 ### **Step 8: Configure Application**
 
 Edit `.env` file in project root:
