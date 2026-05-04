@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+flask
+pypdf
+faiss-cpu
+sentence-transformers
+requests
+python-dotenv
+numpy
+torch

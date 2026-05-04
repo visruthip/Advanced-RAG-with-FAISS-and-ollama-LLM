@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-faiss-llama"
+version = "1.0.0"
+description = "Retrieval Augmented Generation (RAG) system with FAISS vector database and Ollama LLM"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    {name = "AI Developer", email = "dev@example.com"}
+]
+keywords = ["RAG", "FAISS", "LLM", "Ollama", "FastAPI", "Flask"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "fastapi>=0.136.0",
+    "uvicorn>=0.28.0",
+    "flask>=3.1.0",
+    "pypdf>=4.0.0",
+    "faiss-cpu>=1.13.0",
+    "sentence-transformers>=3.0.0",
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+    "numpy>=1.24.0",
+    "torch>=2.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/rag-faiss-llama"
+Documentation = "https://github.com/yourusername/rag-faiss-llama#readme"
+Repository = "https://github.com/yourusername/rag-faiss-llama.git"
+
+[tool.setuptools]
+packages = ["rag"]

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📄 RAG Chat - Simple Document Q&A</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .answer-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .answer-section h2 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .answer-text {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .contexts-section h2 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .context-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #764ba2;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #c33;
+            display: none;
+        }
+
+        .status {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 RAG Chat</h1>
+        <p class="subtitle">Ask questions about the ISO 27001 document</p>
+
+        <div class="input-group">
+            <input 
+                type="text" 
+                id="questionInput" 
+                placeholder="Ask a question about the document..."
+                onkeypress="handleKeyPress(event)"
+            >
+            <button onclick="askQuestion()" id="submitBtn">Ask</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #666; font-size: 13px;" id="loadingText">Loading response...</p>
+            <p style="margin-top: 5px; color: #999; font-size: 12px;" id="loadingHint"></p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="result" id="result">
+            <div class="answer-section">
+                <h2>Answer</h2>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+
+            <div class="contexts-section">
+                <h2>Relevant Contexts</h2>
+                <div id="contextsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let queryCount = 0;
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                askQuestion();
+            }
+        }
+
+        async function askQuestion() {
+            const question = document.getElementById('questionInput').value.trim();
+            
+            if (!question) {
+                showError('Please enter a question');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+
+            // Update loading message based on query count
+            queryCount++;
+            const loadingTextEl = document.getElementById('loadingText');
+            const loadingHintEl = document.getElementById('loadingHint');
+            
+            if (queryCount === 1) {
+                loadingTextEl.textContent = '⏳ Contacting RAG system...';
+                loadingHintEl.textContent = '(If this is the first query, the system is initializing the knowledge base)';
+            } else {
+                loadingTextEl.textContent = '⏳ Processing your question...';
+                loadingHintEl.textContent = '(Getting context-relevant answers from the document)';
+            }
+
+            try {
+                const response = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showError(data.error || 'An error occurred');
+                    return;
+                }
+
+                displayResult(data);
+            } catch (error) {
+                showError('Failed to connect to server: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function displayResult(data) {
+            document.getElementById('answerText').textContent = data.answer;
+
+            const contextsContainer = document.getElementById('contextsContainer');
+            contextsContainer.innerHTML = '';
+
+            if (data.contexts && Array.isArray(data.contexts)) {
+                data.contexts.forEach((context, index) => {
+                    const contextDiv = document.createElement('div');
+                    contextDiv.className = 'context-item';
+                    contextDiv.innerHTML = `<strong>Context ${index + 1}:</strong><br>${context}`;
+                    contextsContainer.appendChild(contextDiv);
+                });
+            }
+
+            // Show sample notice if applicable
+            if (data.is_sample) {
+                const noticeDiv = document.createElement('div');
+                noticeDiv.style.cssText = 'background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #ffc107; font-size: 13px;';
+                noticeDiv.innerHTML = '<strong>📌 Sample Response</strong>: The full AI model is still initializing. Real answers from the document will appear once initialization completes. <a href="javascript:location.reload()" style="color: #856404; text-decoration: underline;">Refresh</a> to try again.';
+                contextsContainer.parentElement.appendChild(noticeDiv);
+            }
+
+            document.getElementById('result').style.display = 'block';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
