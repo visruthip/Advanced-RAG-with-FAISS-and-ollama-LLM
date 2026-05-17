@@ -6,8 +6,8 @@ A modern web application that allows you to ask questions about documents using 
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                  Flask Web Frontend                      │
-│              (HTML/CSS/JavaScript)                       │
+│                  Flask Web Frontend                     │
+│              (HTML/CSS/JavaScript)                      │
 │          Port: 127.0.0.1:5000                           │
 └──────────────────────┬──────────────────────────────────┘
                        │ (HTTP Requests)
