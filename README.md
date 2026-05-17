@@ -24,6 +24,17 @@ A modern web application that allows you to ask questions about documents using 
     │  Vector DB  │          │  Local Model │
     └─────────────┘          └──────────────┘
 ```
+User(Browser)
+|
+Flask(UI)
+|
+FastAPI(Python)
+|
+RAG Pipeline-FAISS
+|
+Ollama
+|
+Response back to UI
 
 ## 📋 Project Structure
 
@@ -56,23 +67,26 @@ RAG_FAISS_LLAMA/
 - Ollama installed and running (for LLM inference)
 - 8GB+ RAM recommended
 
-### Step 1: Activate Virtual Environment
+### Step 1: Create and Activate Virtual Environment
 
 **On Windows (PowerShell):**
-```powershell
-cd C:\Users\VISRUTHI\Documents\GenAI\RAG_FAISS_LLAMA
-.\rfl\Scripts\Activate.ps1
-```
+Open VSCODE
+Open Terminal of Project folder
+
+**Create and Activate Virtual Environment:**
+
+python -m venv rfl
+# instead of rfl, you can provide any name for the virtualenvironment
+
+rfl\Scripts\Activate
 
 **On Windows (Command Prompt):**
 ```cmd
-cd C:\Users\VISRUTHI\Documents\GenAI\RAG_FAISS_LLAMA
-rfl\Scripts\activate.bat
+rfl\Scripts\activate
 ```
 
 **On macOS/Linux:**
 ```bash
-cd ~/Documents/GenAI/RAG_FAISS_LLAMA
 source rfl/bin/activate
 ```
 
@@ -91,7 +105,7 @@ Edit `rag/config.py` and ensure:
 - Chunk size and overlap settings are appropriate
 
 ### Step 4: Start Ollama Service
-
+After downloading the ollama - https://ollama.com/download/windows
 In a separate terminal:
 ```bash
 ollama serve

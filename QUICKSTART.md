@@ -5,8 +5,7 @@
 Open PowerShell and run:
 
 ```powershell
-cd C:\Users\VISRUTHI\Documents\GenAI\RAG_FAISS_LLAMA
-.\rfl\Scripts\Activate.ps1
+rfl\Scripts\Activate
 python run.py
 ```
 
@@ -18,15 +17,13 @@ Wait ~10 seconds, then open: **http://localhost:5000**
 
 **Terminal 1:**
 ```powershell
-cd C:\Users\VISRUTHI\Documents\GenAI\RAG_FAISS_LLAMA
-.\rfl\Scripts\Activate.ps1
+rfl\Scripts\Activate
 python -m uvicorn app:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 **Terminal 2:**
 ```powershell
-cd C:\Users\VISRUTHI\Documents\GenAI\RAG_FAISS_LLAMA
-.\rfl\Scripts\Activate.ps1
+rfl\Scripts\Activate
 python app_flask.py
 ```
 

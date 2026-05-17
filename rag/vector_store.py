@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer
 class FAISSRetrieval:
     def __init__(self, documents):
         self.documents = documents
-        self.model = SentenceTransformer("all-MiniLM-L6-v2")
+        self.model = SentenceTransformer("all-MiniLM-L6-v2") #text embedding 3 large
 
         self.embeddings = self.model.encode(documents)
 
