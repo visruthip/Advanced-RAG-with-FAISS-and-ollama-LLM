@@ -2,6 +2,14 @@
 
 A modern web application that allows you to ask questions about documents using advanced RAG (Retrieval Augmented Generation) with FAISS and Ollama LLM.
 
+## GitHub Remote
+
+To add this repository as the `origin` remote, run:
+
+```bash
+git remote add origin https://github.com/visruthip/Advanced-RAG-with-FAISS-and-ollama-LLM.git
+```
+
 ## Project Architecture
 
 ```
